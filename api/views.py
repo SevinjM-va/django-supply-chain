@@ -12,7 +12,7 @@ from .serializers import (
 )
 
 User = get_user_model()
-
+```python
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -33,32 +33,66 @@ class StockViewSet(viewsets.ViewSet):
 
     @action(detail=False, methods=['post'])
     def supply(self, request):
-        """ Təchizatçının anbara mal əlavə etməsi """
-        serializer = StockOperationSerializer(data=request.data, context={'request': request, 'action_type': 'supply'})
+        serializer = StockOperationSerializer(
+            data=request.data,
+            context={'request': request, 'action_type': 'supply'}
+        )
+
         if serializer.is_valid():
             warehouse = serializer.validated_data['warehouse']
             product = serializer.validated_data['product']
             quantity = serializer.validated_data['quantity']
 
-            stock, created = Stock.objects.get_or_create(warehouse=warehouse, product=product)
+            stock, created = Stock.objects.get_or_create(
+                warehouse=warehouse,
+                product=product
+            )
             stock.quantity += quantity
             stock.save()
 
-            return Response({"message": "Mal uğurla anbara əlavə edildi.", "current_stock": stock.quantity}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "The product was successfully added to the warehouse.",
+                    "current_stock": stock.quantity
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
     @action(detail=False, methods=['post'])
     def consume(self, request):
-        """ İstehlakçının anbardan mal götürməsi """
-        serializer = StockOperationSerializer(data=request.data, context={'request': request, 'action_type': 'consume'})
+
+        serializer = StockOperationSerializer(
+            data=request.data,
+            context={'request': request, 'action_type': 'consume'}
+        )
+
         if serializer.is_valid():
             warehouse = serializer.validated_data['warehouse']
             product = serializer.validated_data['product']
             quantity = serializer.validated_data['quantity']
 
-            stock = Stock.objects.get(warehouse=warehouse, product=product)
+            stock = Stock.objects.get(
+                warehouse=warehouse,
+                product=product
+            )
             stock.quantity -= quantity
             stock.save()
 
-            return Response({"message": "Mal anbardan uğurla götürüldü.", "current_stock": stock.quantity}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    "message": "The product was successfully removed from the warehouse.",
+                    "current_stock": stock.quantity
+                },
+                status=status.HTTP_200_OK
+            )
+
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+```

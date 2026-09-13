@@ -8,7 +8,7 @@ class User(AbstractUser):
         CONSUMER = 'consumer', 'Потребитель'
 
     user_type = models.CharField(
-        max_length=20,  # max_choices əvəzinə max_length yazılır
+        max_length=20, 
         choices=UserType.choices,
         default=UserType.CONSUMER
     )
