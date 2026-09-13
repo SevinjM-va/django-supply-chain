@@ -12,7 +12,7 @@ from .serializers import (
 )
 
 User = get_user_model()
-```python
+
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -95,4 +95,3 @@ class StockViewSet(viewsets.ViewSet):
             serializer.errors,
             status=status.HTTP_400_BAD_REQUEST
         )
-```
